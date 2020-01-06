@@ -36,7 +36,13 @@ class GoogleSearchTest(unittest.TestCase):
             EC.presence_of_element_located((By.CSS_SELECTOR, 'div.r>a')))
         GoogleSearchTest.open_link(driver, first_result)
 
-        time.sleep(1)
+        for i in driver.find_elements(By.CSS_SELECTOR, 'div.r>a:first-child'):
+            try:
+                GoogleSearchTest.open_link(driver, i)
+            except Exception as e:
+                print(e)
+
+        time.sleep(2)
 
     @staticmethod
     def open_link(driver, obj):
@@ -47,14 +53,15 @@ class GoogleSearchTest(unittest.TestCase):
             .key_up(Keys.COMMAND) \
             .perform()
 
-        # Switch to the result - next tab on the right
+        # Switch to the newest tab created
         window_handles = driver.window_handles
         driver.switch_to.window(window_handles[len(window_handles) - 1])
         print(driver.title)
-        time.sleep(1)
+        time.sleep(.1)
 
         # Close current tab
         driver.close()
+        driver.switch_to.window(window_handles[0])
 
 
 if __name__ == '__main__':
