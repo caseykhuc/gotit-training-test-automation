@@ -33,25 +33,28 @@ class GoogleSearchTest(unittest.TestCase):
 
         # Open the first result on new tab
         first_result = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.XPATH, '(//div[@class="r"])[1]/a')))
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.r>a')))
+        GoogleSearchTest.open_link(driver, first_result)
 
-        ActionChains(driver)\
-            .move_to_element(first_result)\
-            .key_down(Keys.COMMAND)\
-            .click(first_result)\
-            .key_up(Keys.COMMAND)\
+        time.sleep(1)
+
+    @staticmethod
+    def open_link(driver, obj):
+        ActionChains(driver) \
+            .move_to_element(obj) \
+            .key_down(Keys.COMMAND) \
+            .click(obj) \
+            .key_up(Keys.COMMAND) \
             .perform()
 
         # Switch to the result - next tab on the right
         window_handles = driver.window_handles
-        driver.switch_to.window(window_handles[len(window_handles)-1])
+        driver.switch_to.window(window_handles[len(window_handles) - 1])
         print(driver.title)
         time.sleep(1)
 
         # Close current tab
         driver.close()
-
-        time.sleep(1)
 
 
 if __name__ == '__main__':
