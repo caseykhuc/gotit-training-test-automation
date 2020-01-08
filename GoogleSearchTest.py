@@ -19,7 +19,7 @@ class GoogleSearchTest(unittest.TestCase):
         self.driver.get(base_url)
         # self.main_window = self.driver.current_window_handle
 
-    def test(self):
+    def test_first_page_result(self):
         driver = self.driver
         # Search
         search_bar = driver.find_element(By.NAME, 'q')
@@ -32,26 +32,31 @@ class GoogleSearchTest(unittest.TestCase):
         self.assertTrue("q=Random+keyword" in driver.current_url)
 
         # Open the first result on new tab
-        first_result = WebDriverWait(driver, 5).until(
+        """ first_result = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'div.r>a')))
-        GoogleSearchTest.open_link(driver, first_result)
+        GoogleSearchTest.open_link(driver, first_result) """
 
+        # Open all results on first page
         for i in driver.find_elements(By.CSS_SELECTOR, 'div.r>a:first-child'):
             try:
                 GoogleSearchTest.open_link(driver, i)
             except Exception as e:
                 print(e)
 
+        # Switch to each result -> print title -> close
+        while len(driver.window_handles) > 1:
+            try:
+                driver.switch_to.window(driver.window_handles[1])
+                print(driver.title)
+                driver.close()
+            except Exception as e:
+                print(e)
+
         time.sleep(2)
 
     @staticmethod
-    def open_link(driver, obj):
-        ActionChains(driver) \
-            .move_to_element(obj) \
-            .key_down(Keys.COMMAND) \
-            .click(obj) \
-            .key_up(Keys.COMMAND) \
-            .perform()
+    def open_link_then_print(driver, obj):
+        GoogleSearchTest.open_link(obj)
 
         # Switch to the newest tab created
         window_handles = driver.window_handles
@@ -63,6 +68,14 @@ class GoogleSearchTest(unittest.TestCase):
         driver.close()
         driver.switch_to.window(window_handles[0])
 
+    @staticmethod
+    def open_link(driver, obj):
+        ActionChains(driver) \
+            .move_to_element(obj) \
+            .key_down(Keys.COMMAND) \
+            .click(obj) \
+            .key_up(Keys.COMMAND) \
+            .perform()
 
 if __name__ == '__main__':
     unittest.main()
